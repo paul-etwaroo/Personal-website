@@ -332,19 +332,26 @@
         
         function updateDateTime() {
             const now = new Date();
+            const isMobile = window.innerWidth <= 968;
             
-            // Format date
-            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-            const dateStr = now.toLocaleDateString('en-US', dateOptions);
-            
-            // Format time
-            const timeStr = now.toLocaleTimeString('en-US', { 
-                hour: 'numeric', 
-                minute: '2-digit',
-                hour12: true 
-            });
-            
-            dateEl.textContent = `${dateStr} • ${timeStr}`;
+            if (isMobile) {
+                // Mobile: just month and day (e.g., "December 16")
+                const dateOptions = { month: 'long', day: 'numeric' };
+                const dateStr = now.toLocaleDateString('en-US', dateOptions);
+                dateEl.textContent = dateStr;
+            } else {
+                // Desktop: full date with time (e.g., "December 16, 2024 • 3:45 PM")
+                const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+                const dateStr = now.toLocaleDateString('en-US', dateOptions);
+                
+                const timeStr = now.toLocaleTimeString('en-US', { 
+                    hour: 'numeric', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+                
+                dateEl.textContent = `${dateStr} • ${timeStr}`;
+            }
             
             // Set sun/moon icon based on local time (6am-6pm = day, otherwise night)
             const hour = now.getHours();
@@ -358,6 +365,9 @@
         // Update immediately and then every minute
         updateDateTime();
         setInterval(updateDateTime, 60000);
+        
+        // Update on window resize
+        window.addEventListener('resize', updateDateTime);
 
         // Insight carousel functionality
         const slides = document.querySelectorAll('.insight-slide');
